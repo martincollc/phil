@@ -5561,6 +5561,15 @@ Gaussian's MEAN toward the market's bracket-ladder shape is a legible,
 gate-1-compatible adjustment; substituting a recalled-from-memory SD for
 the market's implied one is not, and should not be treated as
 "benchmarked" just because the mean half of the same model is sourced.
+**September follow-up (RETRO-20261014-1530): the MEAN is the problem too.**
+Sep rows used the market-implied sd and still lost 17 headline and core rows
+by +0.13 dBrier net. The Cleveland nowcast (MoM 0.53, YoY 3.60, core 0.20)
+came in below the print (0.6, 3.7, 0.3) for the second month running (Aug:
+0.36 and 0.20 vs 0.4 and 0.3). Rule for CPI ladders: when the Cleveland
+nowcast and street consensus (or the ladder centre) disagree, centre on the
+consensus, not the nowcast or a halfway point. Never supersede a row back
+toward the nowcast (4df15362b809). n=2 prints, so this is a centring rule
+only. Gate 2 still bars bets.
 
 **2026-08-21 update (18:11Z settlement): the Aug14-21 Musk weekly set's
 two >0.10-disagreement legs both settled, both LOST.** 240-259
