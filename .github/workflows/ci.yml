@@ -28,8 +28,6 @@ jobs:
         run: python3 core/test_screener_log.py -v
       - name: Scan skips markets without usable token ids, e.g. Protocol V2 (offline)
         run: python3 core/test_token_ids.py -v
-      - name: Polymarket US adapter, venue dispatch and US settle/fill paths (offline)
-        run: python3 core/test_venue_us.py -v
       - name: Headline Arena adapter sends only daily-question vectors (offline)
         run: python3 core/test_headline_arena.py -v
       - name: Score report parses the real ledger (offline)

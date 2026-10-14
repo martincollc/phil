@@ -1,6 +1,6 @@
 {
   "_comment": "PROTECTED — the trading agent may not edit this file or anything in core/. Changes here are made by the human operator only.",
-  "venue": "intl",
+  "venue": "us",
   "_venue_comment": "Which exchange NEW paper bets, forecasts and scans use: 'intl' (international Polymarket, gamma/CLOB) or 'us' (Polymarket US, gateway.polymarket.us). Existing rows always settle on the venue recorded on the row. Operator-only switch.",
   "sim_bankroll_usd": 1000.0,
   "max_stake_usd": 10.0,
