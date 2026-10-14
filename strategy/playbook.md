@@ -9269,3 +9269,15 @@ Provisional at n=1; revisit at n>=3.
 - **No gate changes.** The 2 winning say-the-word bets (transcript-count
   method; that method is 3/3 bets and its 15 tagged forecasts net -0.034)
   are insufficient data to move anything.
+
+## 2026-10-14 04:35Z update: AK rally set settled (RETRO-20261014-0435)
+
+- Transcript-count No bets Mask dc8620df3fdb and Reagan 4e0885f9abf7 both
+  won (+$6.27). The method is now 5/5 bets.
+- In the 18 forecasts from that set, fades 0.07 or more below the mid
+  went 4/4 (net dBrier -0.487). Topical-word Yes-overs 0.10 or more above
+  the mid (AI, SI, Israel) went 0/3 (net +0.275).
+- Method note, not a gate: when a word is topical but missing from the
+  transcript sample, leave the forecast at or near the mid. Do not lift
+  it above. The base-rate gate already blocks such rows from becoming
+  bets.
