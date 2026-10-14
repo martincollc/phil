@@ -4275,3 +4275,18 @@ There are no new hourly proposals since DEEP-10-10.
   beside the mid fix: scan should drop US markets whose game/event date is
   in the past (they cannot be traded on information, only on
   resolver lag), which no title regex in my filters can do reliably.
+- **Recurrence 2026-10-14 20:1xZ (FULL, operator):** 4th US FULL with zero
+  researchable escalations. New agent query `us-sports`
+  (`categories: ["sports"]`, order volume24hr) returned 217 markets, but
+  the screened pool of 222 held only WTA/ITF/UTR tennis, Setka Cup and
+  Czech Liga Pro table tennis, CS2/Dota 2, and minor soccer. No slug
+  matched mlb/nfl/nhl/nba/cfb/ncaaf, and this is the MLB LCS week.
+  Every sampled row showed volume_24h 0, and the top 6 escalations are
+  again past-dated placeholder books (Ceuta-Betis Oct 1 at 0.95, LOI
+  draws Oct 9 at 0.90, Nacional-Pasto Oct 10 at 0.89). Either the
+  gateway lists major leagues under another category or sportsMarketTypes
+  value, or the `volume24hr` ordering is not honoured. I cannot probe the
+  gateway: ad-hoc python is approval-gated in this session. Ask: the
+  operator runs one `venue_us.markets(categories=[...])` listing of
+  distinct category / sportsMarketType values, so discovery can target
+  them.

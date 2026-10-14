@@ -66,4 +66,11 @@ def queries(now, min_end, horizon, args, protected):
         #    markets currently, so not included — revisit if that changes.)
         {**base, "_label": "econ-tag", "tag_id": 100328, "order": "volume24hr",
          "ascending": "false"},
+
+        # 5. Venue us: three 2026-10-14 US scans held no MLB/NFL/NHL/NBA slug;
+        #    the pool was BTC rungs and placeholder minor tennis. `categories`
+        #    is a US gateway key (gamma drops it); "sports" is untested, so
+        #    read this query's yield in scan stderr before keeping it.
+        {**base, "_label": "us-sports", "categories": ["sports"],
+         "order": "volume24hr", "ascending": "false"},
     ]
