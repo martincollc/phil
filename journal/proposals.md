@@ -4227,3 +4227,41 @@ There are no new hourly proposals since DEEP-10-10.
   - A self-enforced rule is decaying again.
   - Status: PROPOSED.
 - **P1, P2, P3(a): unchanged (PROPOSED).** The playbook is 583KB.
+
+## 2026-10-14 13:2xZ - venue_us scan price is the long ASK, not the mid (HIGH)
+
+- **Symptom (first agent cycle on venue `us`, FULL, operator):** the
+  screener's top divergences were almost all artefacts. 21 of the 25 rows
+  with divergence >= 0.15 had a "mid" of exactly 0.90/0.10 (13 Czech Liga
+  Pro table-tennis matches, two 3x3 basketball games, Mixco-Municipal
+  draw dated Oct 3, Derry-St Pat's dated Oct 9, ...).
+- **Cause:** `core/venue_us.py::_long_price` returns
+  `marketSides[long].price` first, and that field is the best OFFER, not a
+  mid. Evidence, live gateway reads at ~13:10Z:
+  - `aec-wta-arysab-annli-2026-10-13`: marketSides Sabalenka price 0.19 =
+    `bestAskQuote` 0.19 (bestBid 0.16). Short side price 0.84 = 1 - bid.
+  - `aec-czechligapro-id2503634975615826`: book 0.10 bid / 0.90 offer,
+    zero volume, `currentPx` 0.50; scan reported 0.90.
+  - `atc-lng-mix-mun-2026-10-03-draw`: 0.01 bid / 0.90 offer, never
+    traded; scan reported 0.90. The match was 11 days ago.
+- **Effect:** every US `outcomePrices` (scan, screener mids, and anything
+  else reading `gamma_view`) is biased up by half the spread on the long
+  side, and on empty market-maker placeholder books it is off by 0.40.
+  The screener then escalates placeholders, and the
+  `mids_exactly_half` filter cannot catch them because they show 0.90,
+  not 0.50.
+- **Fix (operator, core/):** in `_long_price`, prefer
+  (bestBidQuote + bestAskQuote) / 2, falling back to the side price only
+  when one side of the book is missing. Optionally drop zero-volume
+  markets whose spread is >= 0.5 at scan, since they are not tradable
+  information.
+- Fills and forecast baselines are unaffected. `ledger.py:110` and
+  `forecast.py:133` both take bid/ask from `venue.best_prices`, which
+  reads the book. The bias is confined to scan and screener sensing.
+- **Agent-side action this cycle:** no research on the US pool.
+  Researching the artefact list would have spent the hour on empty books.
+  `strategy/discovery.py` query 2 swapped `liquidity_num_min` (dropped on
+  us) for `volume_num_min`. econ-tag still sends gamma `tag_id`, which is
+  dropped. I have no verified US `categories` value for economics to
+  replace it with.
+- Status: PROPOSED (HIGH).

@@ -38,9 +38,11 @@ def queries(now, min_end, horizon, args, protected):
 
         # 2. Deep books regardless of date order — surfaces the biggest events
         #    in the window (ATP/WTA main draws, major-league fixtures) even if
-        #    thousands of small markets resolve sooner.
+        #    thousands of small markets resolve sooner. Venue us (2026-10-14
+        #    scan stderr) drops liquidity_num_min; volume_num_min is the US
+        #    gateway's nearest supported floor.
         {**base, "_label": "by-liquidity", "order": "liquidity",
-         "ascending": "false", "liquidity_num_min": 20000},
+         "ascending": "false", "volume_num_min": 20000},
 
         # 3. Today's active markets, kept from the old behaviour so nothing
         #    imminent is lost: heavy recent trading, near-term resolution.
