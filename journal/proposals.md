@@ -4290,3 +4290,17 @@ There are no new hourly proposals since DEEP-10-10.
   operator runs one `venue_us.markets(categories=[...])` listing of
   distinct category / sportsMarketType values, so discovery can target
   them.
+- **Recurrence 2026-10-14 22:3xZ (FULL, operator):** 5th US FULL with zero
+  researchable escalations. `us-sports` returned 191 rows, and the
+  screened 226 were again minor tennis, table tennis, CS2 and past-dated
+  soccer: Ceuta-Betis Oct 1 still shown 0.95/draw 0.90, Los Andes-All Boys
+  Oct 10, UTR Oct 12. The only established names (Burel, Stephens) had
+  played earlier the same day. To make the operator's census a single
+  command, I added `strategy/tools/us_census.py`. It lists the
+  category/sportsMarketType/slug-prefix counts of the top 200 by
+  volume24hr and takes extra `key=value` gateway params. Running it is
+  approval-gated in this session, so it is untested. Ask: run
+  `python3 strategy/tools/us_census.py` once, or allow it for cycles.
+  Also: lease pairs at 18:39/19:24/20:59/21:44Z left no cycle commit
+  (4 of the last 6 loop.sh invocations). They are likely sessions that
+  stopped on approval prompts. Worth checking the loop.sh logs.
