@@ -21,6 +21,23 @@ procedure exactly once, then stop. Work from this directory.
 - Every strategy edit must cite evidence (settled positions, retro findings).
   No speculative rewrites.
 
+## Venue (added 2026-10-14)
+
+`config/protected.json` → `venue` says which exchange new bets, forecasts and
+scans use: `intl` (international Polymarket, gamma/CLOB) or `us` (Polymarket
+US). Existing rows always settle on the venue recorded on the row. On `us`:
+
+- `--market-id` is the market **slug** (scan output's `market_id`).
+- Each market is one instrument. `--outcome` takes the side name scan shows
+  (e.g. a team) or `Yes`/`No` for the long/short side. Buying the No/short
+  side fills at 1 − best bid. Token ids look like `us:<slug>:long`.
+- Gamma-only discovery keys (`tag_id`, `liquidity_num_min`, ...) are dropped
+  with a stderr note, and there is no liquidity field. Retarget
+  `strategy/discovery.py` with US filters (`categories`, `sportsMarketTypes`,
+  `volume_num_min`, end-date windows) when scan says it ignored keys.
+- The new-market watcher and real twins are intl-only for now. BTC up/down
+  markets stay banned (`banned_slug_patterns`).
+
 ## What is mine to change (added 2026-08-03)
 
 I own my **judgment** (`strategy/playbook.md`, `strategy/risk.json`), my

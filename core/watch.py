@@ -252,10 +252,21 @@ def calendar_entries(wl, now, out_expired):
 
 # --- checks ---------------------------------------------------------------
 
+def current_venue():
+    try:
+        return json.loads(PROTECTED_FILE.read_text()).get("venue", "intl")
+    except Exception:  # noqa: BLE001 - unreadable config: assume the pre-port default
+        return "intl"
+
+
 def check_price_moves(entries, notes):
     """Fire on entries whose mid moved >= threshold inside their window."""
     fires = []
     for e in entries:
+        if str(e["token_id"]).startswith("us:"):
+            # Polymarket US price history is not wired into the watcher yet.
+            notes.append(f"price moves for {e['label']}: US token, not watched yet")
+            continue
         try:
             body = fetch_json(f"{pmapi.CLOB}/prices-history",
                               {"market": e["token_id"], "interval": "1h"})
@@ -316,6 +327,12 @@ def banned_patterns():
 def check_new_markets(cfg, now, notes):
     """Fire on freshly created markets clearing the liquidity/keyword floor."""
     if not isinstance(cfg, dict) or not cfg.get("enabled", False):
+        return []
+    if current_venue() != "intl":
+        # Gamma listings are international markets; firing on them would send
+        # the cycle after markets the configured venue cannot trade.
+        notes.append("new-market watcher skipped: venue is not intl (US listing "
+                     "feed not wired yet)")
         return []
     try:
         min_liquidity = float(cfg.get("min_liquidity", 5000))

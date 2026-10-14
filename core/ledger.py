@@ -5,9 +5,11 @@ PROTECTED CORE — the trading agent must not edit files under core/.
 The agent CALLS this to bet; it cannot bypass the caps in config/protected.json
 because this is the only writer of journal/ledger.jsonl.
 
-Fills are honest: a paper BUY fills at the live CLOB best ask for the chosen
-outcome token (crossing the spread, like a real taker order). If the book is
-empty or the fill violates protected caps, the bet is rejected.
+Fills are honest: a paper BUY fills at the live best ask for the chosen
+outcome, crossing the spread like a real taker order (on Polymarket US the
+No side fills at 1 - best bid; see core/venue_us.py). If the book is empty or
+the fill violates protected caps, the bet is rejected. The venue comes from
+config/protected.json "venue" and is recorded on the row.
 
 Usage:
   place:  python3 core/ledger.py place --market-id 123 --outcome Yes \
@@ -23,7 +25,9 @@ import sys
 import uuid
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import pmapi  # noqa: E402
+import re  # noqa: E402
+
+import venue  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 LEDGER = ROOT / "journal" / "ledger.jsonl"
@@ -79,17 +83,31 @@ def cmd_place(args, entries):
            for e in open_pos):
         sys.exit("REJECTED: already have an open position on this market+outcome")
 
-    m = pmapi.gamma_market(args.market_id)
+    v = venue.current(PROTECTED)
+    m = venue.get_market(args.market_id, v)
     if m.get("closed"):
         sys.exit("REJECTED: market is closed")
-    tokens = pmapi.market_tokens(m)
+    banned = [re.compile(p, re.I) for p in PROTECTED.get("banned_question_patterns", [])]
+    if any(p.search(m.get("question") or "") for p in banned):
+        sys.exit("REJECTED: market matches a protected banned_question_pattern")
+    slug_banned = [re.compile(p, re.I) for p in PROTECTED.get("banned_slug_patterns", [])]
+    if any(p.search(m.get("slug") or "") for p in slug_banned):
+        sys.exit("REJECTED: market slug matches a protected banned_slug_pattern")
+    tokens = venue.market_tokens(m)
     if tokens is None:
-        sys.exit(f"REJECTED: no usable CLOB token ids (Gamma version "
-                 f"{pmapi.market_version(m)!r}; supported: "
-                 f"{sorted(pmapi.SUPPORTED_VERSIONS)})")
-    if args.outcome not in tokens:
+        sys.exit(f"REJECTED: no usable token ids (venue {v!r}, version "
+                 f"{venue.market_version(m)!r}; supported: "
+                 f"{sorted(venue.supported_versions(v))})")
+    outcome = venue.resolve_outcome(m, args.outcome)
+    if outcome is None:
         sys.exit(f"REJECTED: outcome {args.outcome!r} not in {list(tokens)}")
-    bid, ask = pmapi.best_prices(tokens[args.outcome])
+    args.outcome = outcome
+    if v == "us":
+        args.market_id = m["id"]  # the slug
+    if any(e["market_id"] == args.market_id and e["outcome"] == outcome
+           for e in open_pos):
+        sys.exit("REJECTED: already have an open position on this market+outcome")
+    bid, ask = venue.best_prices(tokens[outcome])
     if ask is None:
         sys.exit("REJECTED: no asks in the book (cannot fill)")
     if not PROTECTED["min_entry_price"] <= ask <= PROTECTED["max_entry_price"]:
@@ -99,6 +117,7 @@ def cmd_place(args, entries):
         "id": uuid.uuid4().hex[:12],
         "ts": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "market_id": args.market_id,
+        "venue": v,
         "question": m.get("question"),
         "slug": m.get("slug"),
         "end_date": m.get("endDate"),

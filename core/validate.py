@@ -26,6 +26,7 @@ import datetime as dt
 import json
 import pathlib
 import py_compile
+import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -112,6 +113,19 @@ if protected:
                     and set(classes) <= KNOWN_EDGE_CLASSES):
                 err("config/protected.json: real.allowed_edge_classes must be "
                     f"a non-empty subset of {sorted(KNOWN_EDGE_CLASSES)}")
+    if protected.get("venue", "intl") not in ("intl", "us"):
+        err(f"config/protected.json: venue {protected.get('venue')!r} must be "
+            f"'intl' or 'us'")
+    for field in ("banned_question_patterns", "banned_slug_patterns"):
+        pats = protected.get(field, [])
+        if not isinstance(pats, list):
+            err(f"config/protected.json: {field} must be a list")
+            continue
+        for pat in pats:
+            try:
+                re.compile(pat)
+            except (re.error, TypeError) as e:
+                err(f"config/protected.json: {field} entry {pat!r} invalid — {e}")
     for field in ("sim_bankroll_usd", "max_stake_usd", "max_open_positions",
                   "min_minutes_to_resolution", "max_entry_price", "min_entry_price"):
         if not isinstance(protected.get(field), (int, float)):

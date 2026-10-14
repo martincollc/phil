@@ -28,10 +28,12 @@ import re
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import pmapi  # noqa: E402
+import venue  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PROTECTED = json.loads((ROOT / "config" / "protected.json").read_text())
+VENUE = venue.current(PROTECTED)
+SLUG_BANNED = [re.compile(p, re.I) for p in PROTECTED.get("banned_slug_patterns", [])]
 # Gamma version -> markets keep() skipped for lack of usable token ids.
 UNSUPPORTED = collections.Counter()
 
@@ -84,6 +86,8 @@ def keep(m, seen, banned, args):
     seen.add(m.get("id"))
     if any(p.search(q) for p in banned):
         return None
+    if any(p.search(m.get("slug") or "") for p in SLUG_BANNED):
+        return None
     if float(m.get("volume24hr") or 0) < args.min_volume_24h:
         return None
     try:
@@ -96,13 +100,14 @@ def keep(m, seen, banned, args):
     if max(prices) > PROTECTED["max_entry_price"] or min(prices) < PROTECTED["min_entry_price"]:
         return None
     # A Protocol V2 market or unusable ids: skip it rather than crash the scan.
-    token_ids = pmapi.token_ids(m)
+    token_ids = venue.token_ids(m)
     if token_ids is None:
-        UNSUPPORTED[pmapi.market_version(m)] += 1
+        UNSUPPORTED[venue.market_version(m)] += 1
         return None
     event = (m.get("events") or [{}])[0]
     return {
         "market_id": m.get("id"),
+        "venue": VENUE,
         "question": q,
         "end_date": m.get("endDate"),
         "event_id": event.get("id"),
@@ -138,13 +143,14 @@ def main():
     min_end = now + dt.timedelta(minutes=PROTECTED["min_minutes_to_resolution"])
 
     seen, kept = set(), 0
+    print(f"scan: venue {VENUE!r}", file=sys.stderr)
     for base in discovery_queries(args, min_end, horizon):
         label = base.pop("_label", "unlabeled")
         got = 0
         offset = 0
         while offset < args.limit:
             try:
-                batch = pmapi.gamma_markets(**dict(base, limit=100, offset=offset))
+                batch = venue.list_markets(VENUE, **dict(base, limit=100, offset=offset))
             except RuntimeError as e:
                 print(f"scan: query {label!r} failed: {e}", file=sys.stderr)
                 break

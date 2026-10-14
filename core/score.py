@@ -21,7 +21,7 @@ import sys
 from collections import defaultdict
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import pmapi  # noqa: E402
+import venue  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 LEDGER = ROOT / "journal" / "ledger.jsonl"
@@ -245,7 +245,7 @@ def mark_to_market(open_entries):
     rows = []
     for e in open_entries:
         try:
-            bid, ask = pmapi.best_prices(e["token_id"])
+            bid, ask = venue.best_prices(e["token_id"])
         except Exception as err:  # noqa: BLE001 — MTM is advisory, never fatal
             rows.append({"id": e["id"], "error": str(err)[:80]})
             continue

@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Settle open paper positions AND forecasts against official Polymarket resolutions.
 
+Rows settle on their own venue (row["venue"]; absent = intl): international
+Polymarket via gamma outcomePrices, Polymarket US via /settlement (core/venue_us.py).
+
 PROTECTED CORE — the trading agent must not edit files under core/.
 
 For each open row (bets in journal/ledger.jsonl, stake-free forecasts in
@@ -18,7 +21,7 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import pmapi  # noqa: E402
+import venue  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 LEDGER = ROOT / "journal" / "ledger.jsonl"
@@ -107,26 +110,28 @@ def main():
 
     market_cache = {}
 
-    def get_market(market_id):
-        if market_id not in market_cache:
+    def get_market(row):
+        # Each row settles on the venue it was placed on (pre-port rows: intl).
+        key = (venue.row_venue(row), row["market_id"])
+        if key not in market_cache:
             try:
-                market_cache[market_id] = pmapi.gamma_market(market_id)
-            except RuntimeError as err:
-                print(f"resolve: fetch failed for {market_id}: {err}", file=sys.stderr)
-                market_cache[market_id] = None
-        return market_cache[market_id]
+                market_cache[key] = venue.settlement_market(row["market_id"], key[0])
+            except Exception as err:  # noqa: BLE001 — one bad fetch never blocks the rest
+                print(f"resolve: fetch failed for {key[0]}:{key[1]}: {err}", file=sys.stderr)
+                market_cache[key] = None
+        return market_cache[key]
 
     settled, fsettled = [], []
     for e in entries:
         if e["status"] != "open":
             continue
-        m = get_market(e["market_id"])
+        m = get_market(e)
         if m is not None and settle_against_market(e, m, now):
             settled.append(e)
     for r in forecasts:
         if r["status"] != "open":
             continue
-        m = get_market(r["market_id"])
+        m = get_market(r)
         if m is not None and settle_against_market(r, m, now):
             fsettled.append(r)
 

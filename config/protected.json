@@ -1,5 +1,7 @@
 {
   "_comment": "PROTECTED — the trading agent may not edit this file or anything in core/. Changes here are made by the human operator only.",
+  "venue": "intl",
+  "_venue_comment": "Which exchange NEW paper bets, forecasts and scans use: 'intl' (international Polymarket, gamma/CLOB) or 'us' (Polymarket US, gateway.polymarket.us). Existing rows always settle on the venue recorded on the row. Operator-only switch.",
   "sim_bankroll_usd": 1000.0,
   "max_stake_usd": 10.0,
   "max_open_positions": 60,
@@ -8,6 +10,9 @@
     "Up or Down - .*[0-9]:[0-9]{2}[AP]M-[0-9]",
     "Up or Down.*ET$",
     "Up or Down on [A-Z][a-z]+ [0-9]"
+  ],
+  "banned_slug_patterns": [
+    "^cpc-btc-updown-"
   ],
   "min_minutes_to_resolution": 20,
   "max_entry_price": 0.95,

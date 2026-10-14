@@ -42,10 +42,11 @@ import uuid
 from collections import Counter
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import pmapi  # noqa: E402
+import venue  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 FORECASTS = ROOT / "journal" / "forecasts.jsonl"
+PROTECTED = json.loads((ROOT / "config" / "protected.json").read_text())
 
 # A supersede must change something material: a re-record of an unchanged
 # estimate is the correlated-row flooding the one-live-row rule exists to
@@ -90,6 +91,24 @@ def _num(value):
 def cmd_record(args, rows):
     if not 0.0 < args.est_prob < 1.0:
         sys.exit("REJECTED: est-prob must be in (0,1)")
+
+    # Fetch first so the outcome name is canonical before the one-live-row
+    # check (Polymarket US accepts Yes/No for its long/short side names).
+    v = venue.current(PROTECTED)
+    m = venue.get_market(args.market_id, v)
+    if m.get("closed"):
+        sys.exit("REJECTED: market is closed")
+    tokens = venue.market_tokens(m)
+    if tokens is None:
+        sys.exit(f"REJECTED: no usable token ids (venue {v!r}, version "
+                 f"{venue.market_version(m)!r}; supported: "
+                 f"{sorted(venue.supported_versions(v))})")
+    outcome = venue.resolve_outcome(m, args.outcome)
+    if outcome is None:
+        sys.exit(f"REJECTED: outcome {args.outcome!r} not in {list(tokens)}")
+    args.outcome = outcome
+    if v == "us":
+        args.market_id = m["id"]  # the slug, whatever alias was passed
     live = [r for r in rows
             if r["market_id"] == args.market_id and r["outcome"] == args.outcome
             and r["status"] == "open" and not r.get("superseded_by")]
@@ -111,17 +130,7 @@ def cmd_record(args, rows):
                      f"(old {old['est_prob']}, new {args.est_prob}) or a changed "
                      f"skip-reason (old {old.get('skip_reason')!r})")
 
-    m = pmapi.gamma_market(args.market_id)
-    if m.get("closed"):
-        sys.exit("REJECTED: market is closed")
-    tokens = pmapi.market_tokens(m)
-    if tokens is None:
-        sys.exit(f"REJECTED: no usable CLOB token ids (Gamma version "
-                 f"{pmapi.market_version(m)!r}; supported: "
-                 f"{sorted(pmapi.SUPPORTED_VERSIONS)})")
-    if args.outcome not in tokens:
-        sys.exit(f"REJECTED: outcome {args.outcome!r} not in {list(tokens)}")
-    bid, ask = pmapi.best_prices(tokens[args.outcome])
+    bid, ask = venue.best_prices(tokens[args.outcome])
     if bid is None and ask is None:
         sys.exit("REJECTED: empty book — no market probability to benchmark against")
     mid = (bid + ask) / 2 if bid is not None and ask is not None else bid or ask
@@ -139,6 +148,7 @@ def cmd_record(args, rows):
         "id": uuid.uuid4().hex[:12],
         "ts": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "market_id": args.market_id,
+        "venue": v,
         "question": m.get("question"),
         "slug": m.get("slug"),
         "end_date": m.get("endDate"),

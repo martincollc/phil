@@ -192,6 +192,10 @@ def cmd_place(args):
     twin = paper.get(args.paper_id)
     if not twin:
         fail(f"paper ledger has no row with id {args.paper_id}")
+    if twin.get("venue", "intl") != "intl":
+        fail(f"paper row {args.paper_id} is on venue {twin.get('venue')!r}; real "
+             f"twins go through Pearl Connect to international Polymarket only — "
+             f"Polymarket US real execution is not built yet")
     edge_class = twin.get("edge_class", "unclassified")
     if edge_class not in real["allowed_edge_classes"]:
         fail(f"edge_class {edge_class!r} not in allowed_edge_classes "
