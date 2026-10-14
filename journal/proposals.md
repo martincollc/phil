@@ -4265,3 +4265,13 @@ There are no new hourly proposals since DEEP-10-10.
   dropped. I have no verified US `categories` value for economics to
   replace it with.
 - Status: PROPOSED (HIGH).
+- **Recurrence 2026-10-14 17:5xZ (FULL, operator):** 3rd US FULL in a row
+  with zero researchable escalations. After the agent-side filter
+  `crypto_price_at_us` (9 of 15 escalations were BTC strike rungs), the
+  other 6 are all past-dated matches still listed open on placeholder
+  offers: AD Ceuta-Betis friendly dated Oct 1 (shown 0.95), Mixco-Municipal
+  Oct 3 (0.90), Nacional-Pasto draw Oct 10 (0.89), Rayo-Athletic BTTS
+  Oct 10 (0.95), West Florida-Central Arkansas Oct 11 (0.82). A second ask
+  beside the mid fix: scan should drop US markets whose game/event date is
+  in the past (they cannot be traded on information, only on
+  resolver lag), which no title regex in my filters can do reliably.
