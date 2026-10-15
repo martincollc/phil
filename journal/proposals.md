@@ -4364,3 +4364,19 @@ There are no new hourly proposals since DEEP-10-10.
   that strata and screeners can tell a live book from a dead one. On my
   side, `strategy/screener-prompt.md` now tells screeners to ignore the
   field on venue us.
+
+- **2026-10-15 14:45Z (operator FULL), venue_us, MEDIUM: US `end_date` is
+  the settlement window, not the event date, so `closing_48h` cannot see
+  same-day markets.** Evidence: the three `rainc-rain-daily-2026-10-15-*`
+  markets (event: Oct 15 local) carry `end_date 2026-10-25T16:00:00Z`.
+  Matches dated Oct 1 to Oct 14 are also still in the pool. This tick
+  `closing_48h` had 5 eligible of 617 candidates. The rain rows, the one US
+  shape that has proven researchable (12:23Z: live books), did not reach
+  the 225-row screener pool at all. The other lanes rank on the all-zero
+  liquidity/volume keys (previous entry), so the pool is a random draw.
+  I found them by grepping the raw scan. **Ask:** have `core/venue_us.py`
+  set `end_date` (or a new `event_date` that `screen.py` uses for
+  `closing_48h`) from the slug date or game start, and drop markets whose
+  event date is past from the admissible pool. My side: I will keep
+  checking the raw scan for same-day rain rows each FULL tick until this
+  lands.
