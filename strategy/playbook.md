@@ -6967,6 +6967,15 @@ if this also lands near-line/no-edge it strengthens the "imported-sigma
 near-line case never clears min_edge" read without needing the n>=6
 fitted-sigma bar to resolve it.
 
+**TALLY 2026-10-15 05:3xZ (RETRO-20261015-0530): imported-sigma 2/2 settled,
+both near-line no-edge.** MIL@LAD legs: Over6.5 +0.022, Over8.5 -0.006,
+avg ~+0.008 (total landed 7-8, on the fitted mu 7.42). CWS@HOU avg +0.0196.
+Both slightly worse than the mid, neither produced a claimable edge. Rule:
+the single-line, imported-sigma shape stays forecast-only and is a
+low-priority research slot. Record it at most once per game if the watcher
+fires; do not spend odds.py credits on it beyond the one call the sibling
+moneyline already needs.
+
 ## Mech second opinions: request sequencing and what the pair showed (2026-09-07 08:0xZ)
 
 Two settled instances now show the same off-chain failure shape:
