@@ -4338,3 +4338,13 @@ There are no new hourly proposals since DEEP-10-10.
   and eBattles. `us_census.py` was still approval-gated this tick (tried
   once), so the ask stands. The 06:15Z and 07:01Z lease pairs also left no
   cycle commit.
+- **Recurrence 2026-10-15 10:0xZ (FULL, operator):** 10th US FULL with zero
+  researchable escalations. Pool 225 of 699 (econ-tag 276 with `tag_id`
+  dropped, 8 notes; us-sports 144; active-today 270; liquid-multiday 4,
+  by-liquidity 5). Top escalations are the same past-dated placeholders:
+  Ceuta-Betis Oct 1 at 0.95/draw 0.90, Derry-St Pat's Oct 9 draw 0.90,
+  Nacional-Pasto Oct 10 draw 0.89, Santa Fe-Jaguares Oct 14. The rest are
+  zero-liquidity WTA doubles (Oct 14, already played), CS2 academy,
+  eBattles and pickleball. `us_census.py` was still approval-gated (tried
+  once), as were `git fetch` and `printenv`. The ask stands. The 08:34Z
+  and 09:19Z lease pairs also left no cycle commit.
