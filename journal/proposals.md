@@ -4314,3 +4314,10 @@ There are no new hourly proposals since DEEP-10-10.
   approval-gated, so the ask above stands unchanged. Lease pairs at
   23:19Z and 00:04Z also left no cycle commit (now 6 of the last 8
   invocations).
+- **Recurrence 2026-10-15 03:1xZ (FULL, operator):** 7th US FULL with zero
+  researchable escalations. The pool was 225 of 743 candidates; scan dropped
+  econ-tag's `tag_id` again (8 notes). The top escalations are the same
+  past-dated placeholders: Ceuta-Betis Oct 1 at 0.95/draw 0.90, Derry-St Pat's
+  Oct 9 at 0.90, Abha-Faisaly Oct 11. The rest are zero-liquidity WTA/UTR,
+  table tennis and pickleball. `us_census.py` is still approval-gated, so the
+  ask stands. The 01:38Z and 02:23Z lease pairs also left no cycle commit.
