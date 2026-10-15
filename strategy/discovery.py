@@ -67,30 +67,28 @@ def queries(now, min_end, horizon, args, protected):
         {**base, "_label": "econ-tag", "tag_id": 100328, "order": "volume24hr",
          "ascending": "false"},
 
-        # 5. Venue us, GAME markets (operator, port step 3, 2026-10-15).
-        #    A full paged count of the US gateway on the operator Mac
-        #    (2026-10-15, 20,000 sports markets) showed `categories=sports`
-        #    alone returns season FUTURES first (NFL 3,615, NHL 752, EPL 435
-        #    ...) and the gateway ignored orderBy/endDateMin on that query, so
-        #    scan's 400-row page budget never reached a single game. The
-        #    lever that works is `sportsMarketTypes`. One query per type, so
-        #    a type name the gateway rejects fails only its own query (scan
-        #    logs it and moves on). Winners only: spreads, totals, halves and
-        #    exact scores are line-constructed and the screener's HARD RULE
-        #    pins them to divergence 0 (screener-filters.json
-        #    line_constructed). Types seen live 2026-10-15 are marked; the
-        #    unmarked ones are the same naming pattern for sports whose
-        #    games were not listed that day - read scan stderr and drop any
-        #    that error.
-        *[{**base, "_label": f"us-games-{t}", "categories": ["sports"],
-           "sportsMarketTypes": [t]}
-          for t in (
-              "football_team_full_game_winner",    # seen: NFL 14, CFB 112
-              "basketball_team_full_game_winner",  # seen: NBA 17, VTB 1
-              "soccer_team_full_time_winner",      # seen: UEL, UECL, La Liga
-              "ufc_fight_winner",                  # seen: 10
-              "moneyline",                         # seen: boxing 1
-              "baseball_team_full_game_winner",    # pattern guess (MLB)
-              "hockey_team_full_game_winner",      # pattern guess (NHL)
+        # 5. Venue us, GAME markets (operator, port step 3, revised
+        #    2026-10-15 after live probes on the operator Mac):
+        #    - `sportsMarketTypes` returns 400 for detailed type names and 0
+        #      rows for the coarse SPORTS_MARKET_TYPE_* names on game markets;
+        #      sort orders are ignored. Only `tagIds` (one per league, from
+        #      GET /v1/sports) filters games reliably.
+        #    - A game market's endDate is ~14 days after kickoff, so the end
+        #      window must reach past the horizon.
+        #    `_us_games` makes core/venue_us.py page every market of those
+        #    league tags and keep winners that kick off in the next `hours`
+        #    (it filters on gameStartTime itself). Winners only: spreads,
+        #    totals and props are line-constructed (screener HARD RULE).
+        #    League codes and tag ids: core/venue_us.py LEAGUE_TAGS.
+        *[{"closed": "false", "_label": f"us-games-{name}",
+           "_us_games": {"leagues": leagues, "hours": 72,
+                         "types": r"(full_game_winner|full_time_winner|^moneyline|fight_winner|match_winner)$"}}
+          for name, leagues in (
+              ("football", ["nfl", "cfb"]),
+              ("basketball", ["nba", "eurolg", "cbb"]),
+              ("hockey", ["nhl"]),
+              ("soccer", ["epl", "ucl", "uel", "uecl", "lal", "bun", "sea", "lg1", "mls"]),
+              ("combat", ["ufc", "boxing"]),
+              ("tennis", ["atp", "wta"]),
           )],
     ]
