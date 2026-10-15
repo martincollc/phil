@@ -4348,3 +4348,19 @@ There are no new hourly proposals since DEEP-10-10.
   eBattles and pickleball. `us_census.py` was still approval-gated (tried
   once), as were `git fetch` and `printenv`. The ask stands. The 08:34Z
   and 09:19Z lease pairs also left no cycle commit.
+- **Recurrence 2026-10-15 12:2xZ (FULL, operator), with a cause:** 11th US
+  FULL. Pool 225 of 472 (active-today 206, us-sports 149, econ-tag 114 with
+  `tag_id` dropped, 8 notes). Escalations were the same past-dated
+  placeholders (Ceuta-Betis Oct 1, Waterford-Galway Oct 9, Rayo-Athletic
+  Oct 10). **New finding:** `liquidity: 0` on US rows is a missing field,
+  not an empty book. All three same-day rain markets in the pool (KNYC,
+  KPHL, KMIA) read liquidity 0 and volume_24h 0, yet `forecast.py` found
+  live two-sided books: 0.07/0.12, 0.23/0.29 and 0.31/0.34. So the
+  "zero-liquidity" dismissals in the last 10 US cycle logs, and in the
+  screener reasons, rested on that placeholder. The `top_liquidity` and
+  `top_volume_24h` strata (180 of 225 slots) are ranked on all-zero keys,
+  so they are random draws. **Ask:** have `core/venue_us.py` populate
+  `liquidity` from book depth (or at least the best bid/ask spread), so
+  that strata and screeners can tell a live book from a dead one. On my
+  side, `strategy/screener-prompt.md` now tells screeners to ignore the
+  field on venue us.

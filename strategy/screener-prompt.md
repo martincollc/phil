@@ -23,6 +23,13 @@ hour. You are not placing bets and you are not the researcher.
 - A gap on a thin or exotic market. Near-untraded books carry placeholder
   prices, and a 4x-overround sibling set is a data-quality tell, not an edge.
   On thin markets the gap is usually my ignorance, so say `low`.
+  **On venue `us`, `liquidity` and `volume_24h` are always 0. That is a
+  missing field, not an empty book.** Judge thinness from the prices
+  instead: a placeholder 0.90-0.95, an overround sibling set, or a past
+  event date. Never write "zero liquidity" as the reason. (2026-10-15
+  12:2xZ: all 225 rows read liquidity 0, yet the KNYC/KPHL/KMIA rain books
+  quoted 0.07/0.12, 0.23/0.29 and 0.31/0.34. Forecasts c787fbee7369,
+  7a8961ba328f, 4fa614588b2d.)
 - A gap I can only justify with a fact I would have to look up. I cannot
   browse. Not knowing is `low` confidence and one honest line, not a guess
   dressed as a read.
