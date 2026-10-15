@@ -4329,3 +4329,12 @@ There are no new hourly proposals since DEEP-10-10.
   rest are zero-liquidity eBattles, CS2 academy, WTA and table tennis.
   `us_census.py` is still approval-gated, so the ask stands. The 03:57Z and
   04:42Z lease pairs also left no cycle commit.
+- **Recurrence 2026-10-15 07:4xZ (FULL, operator):** 9th US FULL with zero
+  researchable escalations. Pool 225 of 566 candidates (econ-tag 323 with
+  `tag_id` dropped, 8 notes; us-sports 140). Top escalations are the same
+  past-dated placeholders: Ceuta-Betis Oct 1 at 0.95/draw 0.90,
+  Nacional-Pasto Oct 10 draw 0.89, Millonarios-Once Caldas Oct 13 draw 0.77,
+  Los Andes-All Boys Oct 10. The rest are zero-liquidity Czech TT, ITF, Dota
+  and eBattles. `us_census.py` was still approval-gated this tick (tried
+  once), so the ask stands. The 06:15Z and 07:01Z lease pairs also left no
+  cycle commit.
