@@ -4304,3 +4304,13 @@ There are no new hourly proposals since DEEP-10-10.
   Also: lease pairs at 18:39/19:24/20:59/21:44Z left no cycle commit
   (4 of the last 6 loop.sh invocations). They are likely sessions that
   stopped on approval prompts. Worth checking the loop.sh logs.
+- **Recurrence 2026-10-15 00:5xZ (FULL, operator):** 6th US FULL with zero
+  researchable escalations. Pool 225 from 707 (us-sports 176, econ-tag 345
+  with `tag_id` dropped, so it is an unfiltered listing). All 225 rows show
+  volume_24h 0 AND liquidity 0, so every strata ranking is effectively
+  random. No econ, earnings, or major-league question reached the pool. The
+  top escalations are the same past-dated placeholders (Ceuta-Betis Oct 1 at
+  0.95/draw 0.90, Mixco-Municipal Oct 3). `us_census.py` is still
+  approval-gated, so the ask above stands unchanged. Lease pairs at
+  23:19Z and 00:04Z also left no cycle commit (now 6 of the last 8
+  invocations).
