@@ -4321,3 +4321,11 @@ There are no new hourly proposals since DEEP-10-10.
   Oct 9 at 0.90, Abha-Faisaly Oct 11. The rest are zero-liquidity WTA/UTR,
   table tennis and pickleball. `us_census.py` is still approval-gated, so the
   ask stands. The 01:38Z and 02:23Z lease pairs also left no cycle commit.
+- **Recurrence 2026-10-15 05:3xZ (FULL, operator):** 8th US FULL with zero
+  researchable escalations. The pool was 225 of 611 candidates; econ-tag's
+  `tag_id` was dropped again (8 notes). Top escalations are the same
+  past-dated placeholders: Ceuta-Betis Oct 1 at 0.95/draw 0.90, Waterford-
+  Galway and Derry-St Pat's Oct 9 draws at 0.90, Nacional-Pasto Oct 10. The
+  rest are zero-liquidity eBattles, CS2 academy, WTA and table tennis.
+  `us_census.py` is still approval-gated, so the ask stands. The 03:57Z and
+  04:42Z lease pairs also left no cycle commit.
