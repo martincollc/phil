@@ -9290,3 +9290,12 @@ Provisional at n=1; revisit at n>=3.
   transcript sample, leave the forecast at or near the mid. Do not lift
   it above. The base-rate gate already blocks such rows from becoming
   bets.
+
+## 2026-10-15 00:50Z update: PGR Q3 CR bracket (RETRO-20261015-0050)
+
+- Method note for earnings monthly-print brackets: before you read a month as
+  seasonally high, drop the prior-year same-month comps that a named one-off
+  drove (a hurricane, a regulatory credit, a reserve release). Evidence:
+  bfe4b4889c74. Sep comps of 93.4 (Helene) and 100.4 (FL credit) gave me
+  0.45 against a 0.595 mid. Sep was quiet, and Q3 landed in [86,89). dBrier
+  was +0.139, and the OVV veto saved $5. This is n=1, so no gate changes.
